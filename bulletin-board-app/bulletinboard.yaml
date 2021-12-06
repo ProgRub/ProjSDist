@@ -26,11 +26,11 @@ metadata:
   name: bulletinboard-svc
   namespace: default
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
     app: bulletinboard
   ports:
   - port: 8080
     targetPort: 8080
-    nodePort: 30001
+    # nodePort: 30001
     protocol: TCP
