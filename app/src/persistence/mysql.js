@@ -21,7 +21,7 @@ async function init() {
     const password = PASSWORD_FILE ? fs.readFileSync(PASSWORD_FILE) : PASSWORD;
     const database = DB_FILE ? fs.readFileSync(DB_FILE) : DB;
 
-    await waitPort({ host, port : 3306});
+    await waitPort({ host, port: 3306 });
 
     pool = mysql.createPool({
         connectionLimit: 5,
@@ -33,7 +33,7 @@ async function init() {
 
     return new Promise((acc, rej) => {
         pool.query(
-            'CREATE TABLE IF NOT EXISTS todo_items (id varchar(36), name varchar(255), completed boolean)',
+            "CREATE TABLE IF NOT EXISTS `event` (                `id` int(11) NOT NULL,                `title` varchar(300) DEFAULT NULL COMMENT 'Event''s title',                `detail` varchar(500) DEFAULT NULL COMMENT 'Event''s description',                `category` varchar(300) DEFAULT NULL COMMENT 'Event''s category',                `date` date NOT NULL COMMENT 'Event''s date'              ) ENGINE=InnoDB DEFAULT CHARSET=utf8;",
             err => {
                 if (err) return rej(err);
 
@@ -55,39 +55,28 @@ async function teardown() {
 
 async function getItems() {
     return new Promise((acc, rej) => {
-        pool.query('SELECT * FROM todo_items', (err, rows) => {
+        pool.query('SELECT * FROM event', (err, rows) => {
             if (err) return rej(err);
-            acc(
-                rows.map(item =>
-                    Object.assign({}, item, {
-                        completed: item.completed === 1,
-                    }),
-                ),
-            );
+            acc();
         });
     });
 }
 
 async function getItem(id) {
     return new Promise((acc, rej) => {
-        pool.query('SELECT * FROM todo_items WHERE id=?', [id], (err, rows) => {
+        pool.query('SELECT * FROM event WHERE id=?', [id], (err, rows) => {
             if (err) return rej(err);
-            acc(
-                rows.map(item =>
-                    Object.assign({}, item, {
-                        completed: item.completed === 1,
-                    }),
-                )[0],
-            );
+            acc();
         });
     });
 }
 
 async function storeItem(item) {
     return new Promise((acc, rej) => {
+        console.log(item);
         pool.query(
-            'INSERT INTO todo_items (id, name, completed) VALUES (?, ?, ?)',
-            [item.id, item.name, item.completed ? 1 : 0],
+            'INSERT INTO event (`id`, `title`, `detail`, `category`, `date`) VALUES (NULL, ?, ?,?,?)',
+            [ item.title, item.detail ,item.category,item.date],
             err => {
                 if (err) return rej(err);
                 acc();
@@ -99,8 +88,8 @@ async function storeItem(item) {
 async function updateItem(id, item) {
     return new Promise((acc, rej) => {
         pool.query(
-            'UPDATE todo_items SET name=?, completed=? WHERE id=?',
-            [item.name, item.completed ? 1 : 0, id],
+            'UPDATE event SET name=?, detail=?, category=?, date=? WHERE id=?',
+            [item.title,  item.detail ,item.category,item.date,id],
             err => {
                 if (err) return rej(err);
                 acc();
@@ -111,7 +100,7 @@ async function updateItem(id, item) {
 
 async function removeItem(id) {
     return new Promise((acc, rej) => {
-        pool.query('DELETE FROM todo_items WHERE id = ?', [id], err => {
+        pool.query('DELETE FROM event WHERE id = ?', [id], err => {
             if (err) return rej(err);
             acc();
         });

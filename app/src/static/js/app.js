@@ -19,7 +19,12 @@ function TodoListCard() {
             .then(r => r.json())
             .then(setItems);
     }, []);
-
+    if (items != null) {
+        for (let index = 0; index < items.length; index++) {
+            let date = new Date(items[index].date);
+            items[index].date = date.getDate() + '-' + date.getMonth() + '-' + date.getFullYear();
+        }
+    }
     const onNewItem = React.useCallback(
         newItem => {
             setItems([...items, newItem]);
@@ -53,7 +58,7 @@ function TodoListCard() {
         <React.Fragment>
             <AddItemForm onNewItem={onNewItem} />
             {items.length === 0 && (
-                 <p className="text-center">You have no todo items yet! Add one above!</p>
+                <p className="text-center">You have no todo items yet! Add one above!</p>
             )}
             {items.map(item => (
                 <ItemDisplay
@@ -68,47 +73,84 @@ function TodoListCard() {
 }
 
 function AddItemForm({ onNewItem }) {
-    const { Form, InputGroup, Button } = ReactBootstrap;
+    const { Form, InputGroup, Button, Row, Col } = ReactBootstrap;
 
-    const [newItem, setNewItem] = React.useState('');
+    const [newTitle, setNewTitle] = React.useState('');
+    const [newCategory, setNewCategory] = React.useState('');
+    const [newDate, setNewDate] = React.useState('');
+    const [newDetail, setNewDetail] = React.useState('');
     const [submitting, setSubmitting] = React.useState(false);
 
     const submitNewItem = e => {
+        // console.log(newTitle);
+        // console.log(newCategory);
+        // console.log(newDate);
+        // console.log(newDetail);
+        let newItem={title:newTitle,category:newCategory,detail:newDetail,date:newDate};
+        console.log(JSON.stringify(newItem));
         e.preventDefault();
         setSubmitting(true);
         fetch('/items', {
             method: 'POST',
-            body: JSON.stringify({ name: newItem }),
+            body: JSON.stringify(newItem),
             headers: { 'Content-Type': 'application/json' },
         })
             .then(r => r.json())
             .then(item => {
                 onNewItem(item);
                 setSubmitting(false);
-                setNewItem('');
+                setNewTitle('');
+                setNewCategory('');
+                setNewDate('dd/mm/yyyy');
+                setNewDetail('');
             });
     };
 
     return (
         <Form onSubmit={submitNewItem}>
-            <InputGroup className="mb-3">
-                <Form.Control
-                    value={newItem}
-                    onChange={e => setNewItem(e.target.value)}
-                    type="text"
-                    placeholder="New Item"
-                    aria-describedby="basic-addon1"
-                />
+            <InputGroup >
+                <Form.Group as={Row} className="mb-3">
+                    <Form.Control column
+                        value={newCategory}
+                        onChange={e => setNewCategory(e.target.value)}
+                        type="text"
+                        placeholder="Event's category"
+                        aria-describedby="basic-addon1"
+                    />
+                    <Form.Control column
+                        value={newTitle}
+                        onChange={e => setNewTitle(e.target.value)}
+                        type="text"
+                        placeholder="Event's title"
+                        aria-describedby="basic-addon1"
+                    />
+                    <Form.Control column
+                        value={newDate}
+                        onChange={e => setNewDate(e.target.value)}
+                        type="date"
+                        aria-describedby="basic-addon1"
+                    />
+                </Form.Group>
+                <Form.Group>
+                    <Form.Control
+                        value={newDetail}
+                        onChange={e => setNewDetail(e.target.value)}
+                        as="textarea"
+                        placeholder="Event's description"
+                        rows={3} cols="50"
+                        aria-describedby="basic-addon1"
+                    />
+                </Form.Group>
                 <InputGroup.Append>
                     <Button
                         type="submit"
                         variant="success"
-                        disabled={!newItem.length}
                         className={submitting ? 'disabled' : ''}
                     >
                         {submitting ? 'Adding...' : 'Add'}
                     </Button>
                 </InputGroup.Append>
+
             </InputGroup>
         </Form>
     );
@@ -116,19 +158,6 @@ function AddItemForm({ onNewItem }) {
 
 function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
     const { Container, Row, Col, Button } = ReactBootstrap;
-
-    const toggleCompletion = () => {
-        fetch(`/items/${item.id}`, {
-            method: 'PUT',
-            body: JSON.stringify({
-                name: item.name,
-                completed: !item.completed,
-            }),
-            headers: { 'Content-Type': 'application/json' },
-        })
-            .then(r => r.json())
-            .then(onItemUpdate);
-    };
 
     const removeItem = () => {
         fetch(`/items/${item.id}`, { method: 'DELETE' }).then(() =>
@@ -139,27 +168,12 @@ function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
     return (
         <Container fluid className={`item ${item.completed && 'completed'}`}>
             <Row>
-                <Col xs={1} className="text-center">
-                    <Button
-                        className="toggles"
-                        size="sm"
-                        variant="link"
-                        onClick={toggleCompletion}
-                        aria-label={
-                            item.completed
-                                ? 'Mark item as incomplete'
-                                : 'Mark item as complete'
-                        }
-                    >
-                        <i
-                            className={`far ${
-                                item.completed ? 'fa-check-square' : 'fa-square'
-                            }`}
-                        />
-                    </Button>
+
+                <Col xs={10} className="date">
+                    {item.date}
                 </Col>
                 <Col xs={10} className="name">
-                    {item.name}
+                    {item.title + ' (' + item.category + ')'}
                 </Col>
                 <Col xs={1} className="text-center remove">
                     <Button
@@ -171,6 +185,10 @@ function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
                         <i className="fa fa-trash text-danger" />
                     </Button>
                 </Col>
+                <Col xs={10} className="detail">
+                    {item.detail}
+                </Col>
+
             </Row>
         </Container>
     );

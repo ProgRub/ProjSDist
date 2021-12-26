@@ -11,7 +11,8 @@
     "express": "^4.13.3",
     "morgan": "^1.6.1",
     "vue": "^1.0.10",
-    "vue-resource": "^0.1.17"
+    "vue-resource": "^0.1.17",
+    "mysql2": "^2.3.0"
   },
   "devDependencies": {
     "body-parser": "^1.14.1",
