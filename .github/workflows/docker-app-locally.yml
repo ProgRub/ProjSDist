@@ -6,16 +6,20 @@ jobs:
 
   build:
 
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
-    - name: Create network
-      run: docker network create bb-app
-    - name: Create volume
-      run: docker volume create bb-vol
-    - name: Create MySQL container
-      run: docker run -d --network bb-app --network-alias mysql-development -v bb-vol:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=secret -e MYSQL_DATABASE=bulletin-board mysql:5.7
+    - name: Stop running container
+      run: docker stop bb
+    - name: Delete container
+      run: docker rm bb
+    # - name: Create network
+    #   run: docker network create bb-app
+    # - name: Create volume
+    #   run: docker volume create bb-vol
+    # - name: Create MySQL container
+    #   run: docker run -d --network bb-app --network-alias mysql-development -v bb-vol:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=secret -e MYSQL_DATABASE=bulletin-board mysql:5.7
     - name: Create app image
       run: docker build --tag bulletinboard:1.0 .
     - name: Create app container
