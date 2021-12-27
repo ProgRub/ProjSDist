@@ -1,0 +1,22 @@
+name: Docker Image CI
+
+on: push
+
+jobs:
+
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Create network
+      run: docker network create bb-app
+    - name: Create volume
+      run: docker volume create bb-vol
+    - name: Create MySQL container
+      run: docker run -d --network bb-app --network-alias mysql-development -v bb-vol:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=secret -e MYSQL_DATABASE=bulletin-board mysql:5.7
+    - name: Create app image
+      run: docker build --tag bulletinboard:1.0 .
+    - name: Create app container
+      run: docker run --publish 8000:8080 --detach --network bb-app -e MYSQL_HOST=mysql-development -e MYSQL_USER=root -e MYSQL_PASSWORD=secret -e MYSQL_DB=bulletin-board --name bb bulletinboard:1.0
