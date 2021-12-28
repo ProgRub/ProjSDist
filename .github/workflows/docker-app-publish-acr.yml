@@ -1,0 +1,19 @@
+name: Push to ACR
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - uses: azure/docker-login@v1
+        with:
+          login-server: projetosdregisto.azurecr.io
+          username: projetosdregisto
+          password: AxbHmEI3hI/CVKIT6D0VyQD9tbU0QGEa #2 - VU=ErP1tP2duV1kX8OZbrQgZx8RdcaAm
+
+      - run: |
+          docker tag bulletinboard:1.0 projetosdregisto.azurecr.io/bulletinboard:1.0
+          docker push projetosdregisto.azurecr.io/bulletinboard:1.0 
