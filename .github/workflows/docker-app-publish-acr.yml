@@ -8,7 +8,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Create app image
-      run: docker build --tag bulletinboard:1.0 .
+        run: docker build --tag bulletinboard:1.0 .
       
       - uses: azure/docker-login@v1
         with:
