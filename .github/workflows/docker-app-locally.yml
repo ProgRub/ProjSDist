@@ -10,10 +10,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Stop running container
-      run: docker stop bb
-    - name: Delete container
-      run: docker rm bb
+    # - name: Stop running container
+    #   run: docker stop bb
+    # - name: Delete container
+    #   run: docker rm bb
     # - name: Create network
     #   run: docker network create bb-app
     # - name: Create volume
