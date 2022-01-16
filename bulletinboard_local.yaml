@@ -1,0 +1,96 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pv-claim
+  labels:
+    app: bulletinboard
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 20Gi
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dbcreation-script
+data: 
+  bulletin-board.sql: |-
+    DROP DATABASE IF EXISTS `bulletin-board`;
+    CREATE DATABASE `bulletin-board`; 
+    USE `bulletin-board`;
+    DROP TABLE IF EXISTS `event`;
+    CREATE TABLE `event` (
+      `id` int(11) NOT NULL AUTO_INCREMENT,
+      `title` varchar(300) DEFAULT NULL COMMENT 'Event''s title',
+      `detail` varchar(500) DEFAULT NULL COMMENT 'Event''s description',
+      `category` varchar(300) DEFAULT NULL COMMENT 'Event''s category',
+      `date` date NOT NULL COMMENT 'Event''s date',
+      PRIMARY KEY(id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bulletinboard-deploy
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bulletinboard
+  template:
+    metadata:
+      name: bulletinboard
+      labels:
+        app: bulletinboard # Pod labels The label matches the Service's label selector
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: bb-site
+        image: bulletinboard:2.0
+        env:
+        - name: MYSQL_HOST
+          value: localhost
+        - name: MYSQL_USER
+          value: root
+        - name: MYSQL_PASSWORD
+          value: secret
+        ports:
+        - containerPort: 8080
+        
+      - name: bb-db
+        image: mysql:5.7
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: secret
+        volumeMounts:
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql 
+        ports:
+        - containerPort: 3306
+
+      volumes:
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: mysql-pv-claim
+      - name: dbcreation-script
+        configMap:
+          name: dbcreation-script
+        
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bulletinboard-svc
+  namespace: default
+spec:
+  type: LoadBalancer
+  selector:
+    app: bulletinboard
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP

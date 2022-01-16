@@ -1,27 +1,10 @@
 var mysql = require('mysql2');
 const config = {
-  host: 'mysql-development',
-  user: 'root',
-  password: 'secret',
-  database: 'bulletin-board'
+  host: process.env.MYSQL_HOST,
+  user: process.env.MYSQL_USER,
+  password: process.env.MYSQL_PASSWORD
 }
-// const {
-//   MYSQL_HOST: HOST,
-//   MYSQL_HOST_FILE: HOST_FILE,
-//   MYSQL_USER: USER,
-//   MYSQL_USER_FILE: USER_FILE,
-//   MYSQL_PASSWORD: PASSWORD,
-//   MYSQL_PASSWORD_FILE: PASSWORD_FILE,
-//   MYSQL_DB: DB,
-//   MYSQL_DB_FILE: DB_FILE,
-// } = process.env;
-// const config = {
-//   host: MYSQL_HOST,
-//   user: MYSQL_USER,
-//   password: MYSQL_PASSWORD,
-//   database: MYSQL_DB
-// };
-const mysqlConnection = mysql.createConnection(config); //added the line
+const mysqlConnection = mysql.createConnection(config); 
 exports.getAllEvents = function (req, res) {
   mysqlConnection.query('SELECT * from `event`', function (err, results, fields) {
     res.json(results);
@@ -56,7 +39,27 @@ exports.connection = function (req, res) {
       res.sendStatus(500);
     } else {
       console.log('connected successfully to DB.');
+      //bulletinboard:1.0
+      // mysqlConnection.query(`CREATE DATABASE IF NOT EXISTS \`bulletin-board\` DEFAULT CHARACTER SET utf8mb4`);
+      // mysqlConnection.query(`USE \`bulletin-board\`;`);
+      // mysqlConnection.query(`DROP TABLE IF EXISTS \`event\`;`);
+      // mysqlConnection.query("CREATE TABLE `event` (\
+      //   `id` int(11) NOT NULL AUTO_INCREMENT,\
+      //   `title` varchar(300) DEFAULT NULL COMMENT 'Event''s title',\
+      //   `detail` varchar(500) DEFAULT NULL COMMENT 'Event''s description',\
+      //   `category` varchar(300) DEFAULT NULL COMMENT 'Event''s category',\
+      //   `date` date NOT NULL COMMENT 'Event''s date',\
+      //   PRIMARY KEY(id)\
+      // ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+      // mysqlConnection.query("INSERT INTO `event` (`id`, `title`, `detail`, `category`, `date`) VALUES\
+      // (1, 'Docker Workshop', 'Linuxing in London', 'Work', '2017-11-21'),\
+      // (2, 'WinOps #17', 'WinOps London', 'Work', '2017-11-28'),\
+      // (3, 'Gaming Tournament', 'RLCS Majors', 'Fun', '2021-11-4');");
+
+      //bulletinboard:2.0
+      mysqlConnection.query(`USE \`bulletin-board\`;`);
       res.sendStatus(200);
     }
   });
+  
 }

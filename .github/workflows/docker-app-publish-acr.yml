@@ -7,8 +7,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Create app image
-        run: docker build --tag bulletinboard:1.0 .
       
       - uses: azure/docker-login@v1
         with:
@@ -19,3 +17,7 @@ jobs:
       - run: |
           docker tag bulletinboard:1.0 projetosdregisto.azurecr.io/bulletinboard:1.0
           docker push projetosdregisto.azurecr.io/bulletinboard:1.0 
+          docker tag bulletinboard:2.0 projetosdregisto.azurecr.io/bulletinboard:2.0
+          docker push projetosdregisto.azurecr.io/bulletinboard:2.0 
+          docker tag mysql:5.7 projetosdregisto.azurecr.io/mysql:5.7
+          docker push projetosdregisto.azurecr.io/mysql:5.7
