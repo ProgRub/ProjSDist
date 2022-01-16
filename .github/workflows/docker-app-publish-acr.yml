@@ -12,12 +12,12 @@ jobs:
         with:
           login-server: projetosdregisto.azurecr.io
           username: projetosdregisto
-          password: AxbHmEI3hI/CVKIT6D0VyQD9tbU0QGEa #2 - VU=ErP1tP2duV1kX8OZbrQgZx8RdcaAm
+          password: G8k0zGkkSeP17IZ3y5hhVcGTOpSIXP=m #2 - wbQEvW/1chXd6JCzVvfLz7/MzRxKRBR4
 
       - run: |
           docker tag bulletinboard:1.0 projetosdregisto.azurecr.io/bulletinboard:1.0
           docker push projetosdregisto.azurecr.io/bulletinboard:1.0 
           docker tag bulletinboard:2.0 projetosdregisto.azurecr.io/bulletinboard:2.0
           docker push projetosdregisto.azurecr.io/bulletinboard:2.0 
-          docker tag mysql:5.7 projetosdregisto.azurecr.io/mysql:5.7
-          docker push projetosdregisto.azurecr.io/mysql:5.7
+          docker tag mysql:5.6 projetosdregisto.azurecr.io/mysql:5.6
+          docker push projetosdregisto.azurecr.io/mysql:5.6

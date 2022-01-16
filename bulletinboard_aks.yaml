@@ -5,31 +5,13 @@ metadata:
   labels:
     app: bulletinboard
 spec:
+  storageClassName: "managed"
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
       storage: 20Gi
 
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: dbcreation-script
-data: 
-  bulletin-board.sql: |-
-    DROP DATABASE IF EXISTS `bulletin-board`;
-    CREATE DATABASE `bulletin-board`; 
-    USE `bulletin-board`;
-    DROP TABLE IF EXISTS `event`;
-    CREATE TABLE `event` (
-      `id` int(11) NOT NULL AUTO_INCREMENT,
-      `title` varchar(300) DEFAULT NULL COMMENT 'Event''s title',
-      `detail` varchar(500) DEFAULT NULL COMMENT 'Event''s description',
-      `category` varchar(300) DEFAULT NULL COMMENT 'Event''s category',
-      `date` date NOT NULL COMMENT 'Event''s date',
-      PRIMARY KEY(id)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -48,21 +30,15 @@ spec:
         app: bulletinboard # Pod labels The label matches the Service's label selector
     spec:
       restartPolicy: Always
-      containers:
-      - name: bb-site
-        image: projetosdregisto.azurecr.io/bulletinboard:1.0
-        env:
-        - name: MYSQL_HOST
-          value: localhost
-        - name: MYSQL_USER
-          value: root
-        - name: MYSQL_PASSWORD
-          value: secret
-        ports:
-        - containerPort: 8080
-        
+      
+      volumes:
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: mysql-pv-claim
+
+      containers:        
       - name: bb-db
-        image: projetosdregisto.azurecr.io/mysql:5.7
+        image: projetosdregisto.azurecr.io/mysql:5.6
         env:
         - name: MYSQL_ROOT_PASSWORD
           value: secret
@@ -72,13 +48,17 @@ spec:
         ports:
         - containerPort: 3306
 
-      volumes:
-      - name: mysql-persistent-storage
-        persistentVolumeClaim:
-          claimName: mysql-pv-claim
-      - name: dbcreation-script
-        configMap:
-          name: dbcreation-script
+      - name: bb-site
+        image: projetosdregisto.azurecr.io/bulletinboard:1.0 #depois da primeira vez mudar para 2.0
+        env:
+        - name: MYSQL_HOST
+          value: localhost
+        - name: MYSQL_USER
+          value: root
+        - name: MYSQL_PASSWORD
+          value: secret
+        ports:
+        - containerPort: 8080
         
 ---
 apiVersion: v1
