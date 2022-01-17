@@ -50,7 +50,7 @@ spec:
       restartPolicy: Always
       containers:
       - name: bb-site
-        image: bulletinboard:2.0
+        image: bulletinboard:2.0 #Se é preciso criar a base de dados, imagem 1.0
         env:
         - name: MYSQL_HOST
           value: localhost

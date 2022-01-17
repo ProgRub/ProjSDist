@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bulletinboard-deploy
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bulletinboard
+  template:
+    metadata:
+      name: bulletinboard
+      labels:
+        app: bulletinboard # Pod labels The label matches the Service's label selector
+    spec:
+      restartPolicy: Always
+      
+      volumes:
+      - name: azure
+        azureFile:
+          secretName: azure-secret
+          shareName: projetosdfileshare
+          readOnly: false
+
+      containers:        
+      - name: bb-db
+        image: projetosdregisto.azurecr.io/mysql:5.6
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: secret
+        volumeMounts:
+        - name: azure
+          mountPath: /var/lib/mysql 
+        ports:
+        - containerPort: 3306
+
+      - name: bb-site
+        image: projetosdregisto.azurecr.io/bulletinboard:1.0 #depois da primeira vez mudar para 2.0
+        env:
+        - name: MYSQL_HOST
+          value: localhost
+        - name: MYSQL_USER
+          value: root
+        - name: MYSQL_PASSWORD
+          value: secret
+        ports:
+        - containerPort: 8080
+        
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bulletinboard-svc
+  namespace: default
+spec:
+  type: LoadBalancer
+  selector:
+    app: bulletinboard
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
