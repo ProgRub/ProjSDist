@@ -12,13 +12,13 @@ new Vue({
 
   methods: {
 
-    fetchEvents: function () {
+    fetchEvents: async function () {
       var events = [];
-      this.$http.get('/api/connection');
+      await this.$http.get('/api/connection');
       this.$http.get('/api/events')
         .success(function (events) {
           this.$set('events', events);
-          // console.log(events);
+          console.log(events);
         })
         .error(function (err) {
           console.log(err);
@@ -29,8 +29,8 @@ new Vue({
       if (this.event.title.trim() && this.event.category.trim() && this.event.date.trim()) {
         this.$http.post('/api/events', this.event)
           .success(function (res) {
-            console.log(res.insertId);
-            this.events.push({ id: res.insertId, title: this.event.title, category: this.event.category, detail: this.event.detail, date: this.event.date});
+            console.log(res);
+            this.events.push({ id: res, title: this.event.title, category: this.event.category, detail: this.event.detail, date: this.event.date});
             console.log('Event added!');
           })
           .error(function (err) {

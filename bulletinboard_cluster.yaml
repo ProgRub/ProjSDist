@@ -1,16 +1,15 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mysql-pv-claim
+  name: postgresql-pv-claim
   labels:
     app: bulletinboard
 spec:
-  storageClassName: "managed"
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 20Gi
+      storage: 2Gi
 
 ---
 apiVersion: apps/v1
@@ -30,35 +29,34 @@ spec:
         app: bulletinboard # Pod labels The label matches the Service's label selector
     spec:
       restartPolicy: Always
-      
-      volumes:
-      - name: mysql-persistent-storage
-        persistentVolumeClaim:
-          claimName: mysql-pv-claim
-
-      containers:        
-      - name: bb-db
-        image: projetosdregisto.azurecr.io/mysql:5.6
-        env:
-        - name: MYSQL_ROOT_PASSWORD
-          value: secret
-        volumeMounts:
-        - name: mysql-persistent-storage
-          mountPath: /var/lib/mysql 
-        ports:
-        - containerPort: 3306
-
+      containers:
       - name: bb-site
-        image: projetosdregisto.azurecr.io/bulletinboard:1.0 #depois da primeira vez mudar para 2.0
+        image: progrub/bulletinboard:1.0
         env:
-        - name: MYSQL_HOST
+        - name: POSTGRES_HOST
           value: localhost
-        - name: MYSQL_USER
-          value: root
-        - name: MYSQL_PASSWORD
+        - name: POSTGRES_USER
+          value: postgres
+        - name: POSTGRES_PASSWORD
           value: secret
         ports:
         - containerPort: 8080
+        
+      - name: bb-db
+        image: postgres
+        env:
+        - name: POSTGRES_PASSWORD
+          value: secret
+        volumeMounts:
+        - name: postgresql-persistent-storage
+          mountPath: /var/lib/postgresql 
+        ports:
+        - containerPort: 5432
+
+      volumes:
+      - name: postgresql-persistent-storage
+        persistentVolumeClaim:
+          claimName: postgresql-pv-claim
         
 ---
 apiVersion: v1

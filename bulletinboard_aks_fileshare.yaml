@@ -25,9 +25,9 @@ spec:
 
       containers:        
       - name: bb-db
-        image: projetosdregisto.azurecr.io/mysql:5.6
+        image: postgres
         env:
-        - name: MYSQL_ROOT_PASSWORD
+        - name: POSTGRES_PASSWORD
           value: secret
         volumeMounts:
         - name: azure
@@ -38,11 +38,11 @@ spec:
       - name: bb-site
         image: projetosdregisto.azurecr.io/bulletinboard:1.0 #depois da primeira vez mudar para 2.0
         env:
-        - name: MYSQL_HOST
+        - name: POSTGRES_HOST
           value: localhost
-        - name: MYSQL_USER
-          value: root
-        - name: MYSQL_PASSWORD
+        - name: POSTGRES_USER
+          value: postgres
+        - name: POSTGRES_PASSWORD
           value: secret
         ports:
         - containerPort: 8080

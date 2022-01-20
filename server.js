@@ -29,8 +29,8 @@ if ('production' == app.get('env')) {
 }
 
 app.get('/', routes.index);
-app.get('/api/events', api.getAllEvents);
 app.get('/api/connection',api.connection);
+app.get('/api/events', api.getAllEvents);
 app.post('/api/events', api.addEvent);
 app.delete('/api/events/:eventId', api.deleteEvent);
 
