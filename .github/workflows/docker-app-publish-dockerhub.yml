@@ -22,7 +22,7 @@ jobs:
         with:
           username: "$DOCKERHUB_USERNAME"
           password: "$DOCKERHUB_PASSWORD"
-"
+
       - name: Build and push image
         run: |
           docker buildx build --push --platform linux/arm/v7 --tag progrub/bulletinboard:1.0 .
