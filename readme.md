@@ -24,6 +24,7 @@ POSTGRES_PASSWORD=secret --name bb bulletinboard:1.0
 
 
 ## Aplicação no _Azure Container Registry_
+ATENÇÃO: Se preferirem não criar o grupo de recursos e kubernetes por já terem criado, alterem o bulletinboard.yaml para fazer pull da imagem progrub/bulletinboard:1.0 em vez de projetosdregisto... NO ENTANTO, precisam de criar o fileshare na mesma.
 
 14. Em portal.azure.com, 
 * no menu de Recursos, selecione Criar recurso, escolha Contentores e depois Registo de 
