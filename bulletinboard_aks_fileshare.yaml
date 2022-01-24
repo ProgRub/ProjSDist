@@ -36,7 +36,7 @@ spec:
         - containerPort: 3306
 
       - name: bb-site
-        image: projetosdregisto.azurecr.io/bulletinboard:1.0 #depois da primeira vez mudar para 2.0
+        image: projetosdregisto.azurecr.io/bulletinboard:1.0 
         env:
         - name: POSTGRES_HOST
           value: localhost
