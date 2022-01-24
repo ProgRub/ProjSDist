@@ -18,7 +18,7 @@ jobs:
         uses: docker/login-action@v1
         with:
           username: progrub
-          password: 4RdX84Q$zroi5DJFs#Sw^%*nYB9%tHB4
+          password: 5Uv!*kmHnz#3TEYmQ@nmZ8*TUmfUBKqu
 
       - name: Build and push image
         run: |
