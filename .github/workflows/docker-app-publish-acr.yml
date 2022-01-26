@@ -12,7 +12,7 @@ jobs:
         with:
           login-server: projetosdregisto.azurecr.io
           username: projetosdregisto
-          password: WA4FNr310kuDK3+NmBWZDEBJH0eTBdy4 #2 - J=dtegOhuE/R7AT5RBfGIx88xP+0yNEb
+          password: 2fxAxhK6uJBCS/gXNnKg5T9TwFc7pqsZ #2 - DBaDwyrsGhb7JVOAa/ignuCYsiGkWJGZ
 
       - run: |
           docker build --tag bulletinboard:1.0 .
