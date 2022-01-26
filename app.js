@@ -18,7 +18,6 @@ new Vue({
       this.$http.get('/api/events')
         .success(function (events) {
           this.$set('events', events);
-          console.log("TESTE APRESENTAÇÃO");
           console.log(events);
         })
         .error(function (err) {

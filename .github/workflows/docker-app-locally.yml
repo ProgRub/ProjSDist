@@ -10,14 +10,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Stop running container
-      run: docker stop bb
-    - name: Delete container
-      run: docker rm bb
-    - name: Stop running PostgresSQL container
-      run: docker stop postgres
-    - name: Delete PostgresSQL container
-      run: docker rm postgres
+    # - name: Stop running container
+    #   run: docker stop bb
+    # - name: Delete container
+    #   run: docker rm bb
+    # - name: Stop running PostgresSQL container
+    #   run: docker stop postgres
+    # - name: Delete PostgresSQL container
+    #   run: docker rm postgres
     # - name: Create network
     #   run: docker network create bb-app
     # - name: Create volume
